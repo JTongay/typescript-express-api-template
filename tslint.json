@@ -2,6 +2,12 @@
   "extends": [
     "tslint:recommended"
   ],
+  "linterOptions": {
+    "exclude": [
+      "generator",
+      "node_modules"
+    ]
+  },
   "rules": {
     "class-name": true,
     "comment-format": [

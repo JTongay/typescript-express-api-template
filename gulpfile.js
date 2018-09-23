@@ -15,28 +15,38 @@ const yargs = require('yargs');
 
 const rootDir = './';
 
+// ================== Src directory resolver ========================
 function resolveToSrc() {
   return path.join(rootDir, 'src');
 }
 
-/**
- *
- * @param glob - the new incoming file name
- */
-
+// ================== Controller Resolvers ===========================
 function resolveToControllers() {
-  // glob = glob || '';
   return path.join(rootDir, 'src', 'controllers'); // src/controllers
 }
 
 function resolveToControllersIndex() {
-  return path.join(resolveToControllersTypes(), 'index.ts');
+  return path.join(resolveToControllers(), 'index.ts');
 }
 
-function resolveToControllersTypes(glob) {
-  glob = glob || '';
-  return path.join(rootDir, 'src', 'controllers', 'types', glob); // src/controllers/types/{glob}
+function resolveToControllersTypes() {
+  return path.join(rootDir, 'src', 'controllers', 'types'); // src/controllers/types/{glob}
 }
+
+// ==================== Model Resolvers ==============================
+function resolveToModels() {
+  return path.join(rootDir, 'src', 'models'); // src/models
+}
+
+function resolveToModelsIndex() {
+  return path.join(rootDir, 'src', 'models', 'index.ts'); // src/models/index.ts
+}
+
+function resolveToModelsSpec() {
+  return path.join(rootDir, 'tests', 'unit', 'models'); // tests/unit/models
+}
+
+// ==================== Inversify Resolvers ===========================
 
 function resolveToInversifyPath(file) {
   switch (file) {
@@ -50,6 +60,8 @@ function resolveToInversifyPath(file) {
       throw new Error(`Cannot find inversify type ${file}, must be config or types`);
   }
 }
+
+// ===================== Helper Functions =============================
 
 function capitalizeFirstLetter(val) {
   return val.charAt(0).toUpperCase() + val.slice(1);
@@ -67,40 +79,12 @@ function generateInterfaceName(val) {
 // ------------------------- Map of all paths ---------------------------
 const pathMap = {
   blankControllerTemplate: path.join(__dirname, 'generator', 'temp.controller.ts'),
-  blankControllerInterfaceTemplate: path.join(__dirname, 'generator', 'itemp.controller.ts')
+  blankControllerInterfaceTemplate: path.join(__dirname, 'generator', 'itemp.controller.ts'),
+  modelTemplate: path.join(__dirname, 'generator', 'temp.model.ts'),
+  modelSpecTemplate: path.join(__dirname, 'generator', 'temp.model.spec.ts')
 };
 
 // ========================= Gulp tasks ================================
-// gulp controller --name booyah
-gulp.task('booyah', () => {
-  const name = yargs.argv.name;
-  const controllerDestinationPath = resolveToControllers();
-  const controllerTypeDestinationPath = resolveToControllersTypes();
-  const controllerIndexPath = path.join(resolveToControllers(), 'index.ts');
-  const controllerTypeIndexPath = path.join(resolveToControllersTypes(), 'index.ts');
-  const interfaceName = generateInterfaceName(name);
-
-  const addControllerToIndex = gulp.src(controllerIndexPath)
-    .pipe(inject.append(`export * from './${capitalizeFirstLetter(name)}.controller';`))
-    .pipe(gulp.dest(resolveToControllers))
-  
-  // Add to inversify types
-  const addToInversifyTypes = gulp.src(resolveToInversifyPath('types'))
-    .pipe(inject.after('const TYPES = {', `
-  ${interfaceName}Controller: Symbol.for('${interfaceName}Controller'),`))
-    .pipe(gulp.dest(resolveToSrc()));
-  
-  const addToInversifyConfig = gulp.src(resolveToInversifyPath('config'))
-    .pipe(inject.before('import { Container } from \'inversify\';', `
-import { ${capitalizeFirstLetter(name)}Controller } from '@/controllers';
-import { ${interfaceName}Controller } from '@/controllers/types';
-`))
-    .pipe(inject.after('const container: Container = new Container();', `
-container.bind<${interfaceName}Controller>(TYPES.${interfaceName}Controller).to(${capitalizeFirstLetter(name)}Controller);`))
-    .pipe(gulp.dest(resolveToSrc()));
-
-  return merge(createNewControllerInterface, addExportToIndex, createNewController, addControllerToIndex, merge(addToInversifyTypes, addToInversifyConfig));
-});
 
 // interface generator
 gulp.task('controller:interface:create', () => {
@@ -140,11 +124,96 @@ gulp.task('controller:create', () => {
       filePath.basename = filePath.basename.replace('temp', controllerName)
     }))
     .pipe(gulp.dest(resolveToControllers()));
+});
+
+// add to controllers exports barrel
+gulp.task('controller:export', () => {
+  const name = yargs.argv.name;
+
+  return gulp.src(resolveToControllersIndex())
+    .pipe(inject.append(`export * from './${capitalizeFirstLetter(name)}.controller';`))
+    .pipe(gulp.dest(resolveToControllers()))
+});
+
+// Add to inversify types src/inversify.types.ts
+gulp.task('controller:inversify:types', () => {
+  const interfaceName = generateInterfaceName(yargs.argv.name);
+
+  return gulp.src(resolveToInversifyPath('types'))
+    .pipe(inject.after('const TYPES = {', `
+  ${interfaceName}Controller: Symbol.for('${interfaceName}Controller'),`))
+    .pipe(gulp.dest(resolveToSrc()));
 })
 
+gulp.task('controller:inversify:config', () => {
+  const name = yargs.argv.name;
+  const interfaceName = generateInterfaceName(name);
+
+  return gulp.src(resolveToInversifyPath('config'))
+    .pipe(inject.before('import { Container } from \'inversify\';', `
+import { ${capitalizeFirstLetter(name)}Controller } from '@/controllers';
+import { ${interfaceName}Controller } from '@/controllers/types';
+`))
+    .pipe(inject.after('const container: Container = new Container();', `
+container.bind<${interfaceName}Controller>(TYPES.${interfaceName}Controller).to(${capitalizeFirstLetter(name)}Controller);`))
+    .pipe(gulp.dest(resolveToSrc()));
+})
+
+gulp.task('model:create', () => {
+  const interfaceName = generateInterfaceName(yargs.argv.name);
+  const modelName = capitalizeFirstLetter(yargs.argv.name);
+
+  // Creating the model
+  return gulp.src(pathMap.modelTemplate)
+    .pipe(template({
+      interfaceName,
+      name: modelName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('temp', modelName)
+    }))
+    .pipe(gulp.dest(resolveToModels()));
+});
+
+gulp.task('model:export', () => {
+  const name = yargs.argv.name;
+
+  return gulp.src(resolveToModelsIndex())
+    .pipe(inject.append(`export * from './${capitalizeFirstLetter(name)}.model';`))
+    .pipe(gulp.dest(resolveToModels()))
+});
+
+gulp.task('model:tdd', () => {
+  const interfaceName = generateInterfaceName(yargs.argv.name);
+  const modelName = capitalizeFirstLetter(yargs.argv.name);
+
+  // Creating the model test
+  return gulp.src(pathMap.modelSpecTemplate)
+    .pipe(template({
+      interfaceName,
+      modelName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('temp', modelName)
+    }))
+    .pipe(gulp.dest(resolveToModelsSpec()));
+});
+
+// gulp controller --name controllerName
 gulp.task('controller', gulp.series(
   'controller:interface:create', 
   'controller:interface:export',
-  'controller:create'
+  'controller:create',
+  'controller:export',
+  'controller:inversify:types',
+  'controller:inversify:config'
+  )
+);
+
+// gulp model --name modelName
+gulp.task('model', gulp.series(
+    'model:create',
+    'model:export',
+    'model:tdd'
   )
 )

@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require('chalk');
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
@@ -25,7 +26,7 @@ function resolveToControllersIndex() {
 }
 
 function resolveToControllersTypes() {
-  return path.join(rootDir, 'src', 'controllers', 'types'); // src/controllers/types/{glob}
+  return path.join(rootDir, 'src', 'controllers', 'types'); // src/controllers/types
 }
 
 // ==================== Model Resolvers ==============================
@@ -48,6 +49,27 @@ function resolveToRoutes() {
 
 function resolveToRoutesSpec() {
   return path.join(rootDir, 'tests', 'integration', 'routes'); // tests/integration/routes
+}
+
+// ====================== Services Resolvers ==========================
+function resolveToServices() {
+  return path.join(__dirname, 'src', 'services'); // src/services
+}
+
+function resolveToServicesIndex() {
+  return path.join(__dirname, 'src', 'services', 'index.ts'); // src/services/index.ts
+}
+
+function resolveToServicesTypes() {
+  return path.join(__dirname, 'src', 'services', 'types'); // src/services/types
+}
+
+function resolveToServicesTypesIndex() {
+  return path.join(__dirname, 'src', 'services', 'types', 'index.ts'); // src/services/types/index.ts
+}
+
+function resolveToServicesSpec() {
+  return path.join(__dirname, 'tests', 'unit', 'services'); // tests/unit/services
 }
 
 // ==================== Inversify Resolvers ===========================
@@ -87,7 +109,10 @@ const pathMap = {
   modelTemplate: path.join(__dirname, 'generator', 'temp.model.ts'),
   modelSpecTemplate: path.join(__dirname, 'generator', 'temp.model.spec.ts'),
   routeTemplate: path.join(__dirname, 'generator', 'temp.routes.ts'),
-  routeSpecTemplate: path.join(__dirname, 'generator', 'temp.routes.spec.ts')
+  routeSpecTemplate: path.join(__dirname, 'generator', 'temp.routes.spec.ts'),
+  serviceTemplate: path.join(__dirname, 'generator', 'temp.service.ts'),
+  serviceTypeTemplate: path.join(__dirname, 'generator', 'itemp.service.ts'),
+  serviceSpecTemplate: path.join(__dirname, 'generator', 'temp.service.spec.ts'),
 };
 
 // ========================= Gulp tasks ================================
@@ -113,7 +138,7 @@ gulp.task('controller:interface:export', () => {
 
   return gulp.src(resolveToControllersIndex())
     .pipe(inject.append(`export * from './${interfaceName}.controller';`))
-    .pipe(gulp.dest(resolveToControllersTypes()))
+    .pipe(gulp.dest(resolveToControllersTypes()));
 });
 
 gulp.task('controller:create', () => {
@@ -207,6 +232,7 @@ gulp.task('model:tdd', () => {
 
 gulp.task('route:create', () => {
   const routeName = capitalizeFirstLetter(yargs.argv.name);
+  console.log(chalk.red(`${routeName} route is created, but don't forget to add your base route and call the router in the src/routes/index.ts file!`))
 
   // Creating the route file
   return gulp.src(pathMap.routeTemplate)
@@ -233,6 +259,94 @@ gulp.task('route:tdd', () => {
     .pipe(gulp.dest(resolveToRoutesSpec()));
 });
 
+gulp.task('service:interface:create', () => {
+  const name = yargs.argv.name;
+  const serviceTypeDestinationPath = resolveToServicesTypes();
+  const interfaceName = generateInterfaceName(name);
+
+  return gulp.src(pathMap.serviceTypeTemplate)
+    .pipe(template({
+      interfaceName: interfaceName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('itemp', interfaceName)
+    }))
+    .pipe(gulp.dest(serviceTypeDestinationPath));
+});
+
+gulp.task('service:interface:export', () => {
+  const interfaceName = generateInterfaceName(yargs.argv.name);
+
+  return gulp.src(resolveToServicesTypesIndex())
+    .pipe(inject.append(`
+export * from './${interfaceName}.service';`))
+    .pipe(gulp.dest(resolveToServicesTypes()));
+});
+
+gulp.task('service:create', () => {
+  const name = yargs.argv.name;
+  const interfaceName = generateInterfaceName(name);
+  const serviceName = capitalizeFirstLetter(name);
+
+  return gulp.src(pathMap.serviceTemplate)
+    .pipe(template({
+      serviceName,
+      interfaceName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('temp', serviceName)
+    }))
+    .pipe(gulp.dest(resolveToServices()));
+});
+
+
+gulp.task('service:export', () => {
+  const serviceName = capitalizeFirstLetter(yargs.argv.name);
+
+  return gulp.src(resolveToServicesIndex())
+    .pipe(inject.append(`
+export * from './${serviceName}.service';`))
+    .pipe(gulp.dest(resolveToServices()));
+});
+
+
+gulp.task('service:inversify:config', () => {
+  const name = yargs.argv.name;
+  const interfaceName = generateInterfaceName(name);
+
+  return gulp.src(resolveToInversifyPath('config'))
+    .pipe(inject.before('import { Container } from \'inversify\';', `
+import { ${capitalizeFirstLetter(name)}Service } from '@/services';
+import { ${interfaceName}Service } from '@/services/types';
+`))
+    .pipe(inject.after('const container: Container = new Container();', `
+container.bind<${interfaceName}Service>(TYPES.${interfaceName}Service).to(${capitalizeFirstLetter(name)}Service);`))
+    .pipe(gulp.dest(resolveToSrc()));
+});
+
+gulp.task('service:inversify:types', () => {
+  const interfaceName = generateInterfaceName(yargs.argv.name);
+
+  return gulp.src(resolveToInversifyPath('types'))
+    .pipe(inject.after('const TYPES = {', `
+  ${interfaceName}Service: Symbol.for('${interfaceName}Service'),`))
+    .pipe(gulp.dest(resolveToSrc()));
+});
+
+gulp.task('service:tdd', () => {
+  const serviceName = capitalizeFirstLetter(yargs.argv.name);
+
+  // Creating the integration test
+  return gulp.src(pathMap.serviceSpecTemplate)
+    .pipe(template({
+      serviceName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('temp', serviceName)
+    }))
+    .pipe(gulp.dest(resolveToServicesSpec()));
+});
+
 // gulp controller --name controllerName
 gulp.task('controller', gulp.series(
   'controller:interface:create', 
@@ -256,5 +370,17 @@ gulp.task('model', gulp.series(
 gulp.task('route', gulp.series(
     'route:create',
     'route:tdd'
+  )
+);
+
+// gulp service --name serviceName
+gulp.task('service', gulp.series(
+    'service:interface:create',
+    'service:interface:export',
+    'service:create',
+    'service:export',
+    'service:inversify:config',
+    'service:inversify:types',
+    'service:tdd'
   )
 )

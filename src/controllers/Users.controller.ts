@@ -1,5 +1,5 @@
-import { IUsersController } from '@/controllers/types/IUsers.controller';
-import { IUser, User } from '@/models/User.model';
+import { IUsersController } from '@/controllers/types';
+import { IUser, User } from '@/models';
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 

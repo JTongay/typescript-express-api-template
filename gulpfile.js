@@ -3,14 +3,9 @@
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
-const concat = require('gulp-concat');
-const replace = require('gulp-replace');
-const clean = require('gulp-clean');
-const sync = require('run-sequence');
 const rename = require('gulp-rename');
 const template = require('gulp-template');
 const inject = require('gulp-inject-string');
-const merge = require('merge-stream');
 const yargs = require('yargs');
 
 const rootDir = './';
@@ -44,6 +39,15 @@ function resolveToModelsIndex() {
 
 function resolveToModelsSpec() {
   return path.join(rootDir, 'tests', 'unit', 'models'); // tests/unit/models
+}
+
+// ====================== Router Resolvers ============================
+function resolveToRoutes() {
+  return path.join(__dirname, 'src', 'routes'); // src/routes
+}
+
+function resolveToRoutesSpec() {
+  return path.join(rootDir, 'tests', 'integration', 'routes'); // tests/integration/routes
 }
 
 // ==================== Inversify Resolvers ===========================
@@ -81,7 +85,9 @@ const pathMap = {
   blankControllerTemplate: path.join(__dirname, 'generator', 'temp.controller.ts'),
   blankControllerInterfaceTemplate: path.join(__dirname, 'generator', 'itemp.controller.ts'),
   modelTemplate: path.join(__dirname, 'generator', 'temp.model.ts'),
-  modelSpecTemplate: path.join(__dirname, 'generator', 'temp.model.spec.ts')
+  modelSpecTemplate: path.join(__dirname, 'generator', 'temp.model.spec.ts'),
+  routeTemplate: path.join(__dirname, 'generator', 'temp.routes.ts'),
+  routeSpecTemplate: path.join(__dirname, 'generator', 'temp.routes.spec.ts')
 };
 
 // ========================= Gulp tasks ================================
@@ -199,6 +205,34 @@ gulp.task('model:tdd', () => {
     .pipe(gulp.dest(resolveToModelsSpec()));
 });
 
+gulp.task('route:create', () => {
+  const routeName = capitalizeFirstLetter(yargs.argv.name);
+
+  // Creating the route file
+  return gulp.src(pathMap.routeTemplate)
+    .pipe(template({
+      name: routeName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('temp', routeName)
+    }))
+    .pipe(gulp.dest(resolveToRoutes()));
+});
+
+gulp.task('route:tdd', () => {
+  const routeName = capitalizeFirstLetter(yargs.argv.name);
+
+  // Creating the integration test
+  return gulp.src(pathMap.routeSpecTemplate)
+    .pipe(template({
+      name: routeName
+    }))
+    .pipe(rename((filePath) => {
+      filePath.basename = filePath.basename.replace('temp', routeName)
+    }))
+    .pipe(gulp.dest(resolveToRoutesSpec()));
+});
+
 // gulp controller --name controllerName
 gulp.task('controller', gulp.series(
   'controller:interface:create', 
@@ -215,5 +249,12 @@ gulp.task('model', gulp.series(
     'model:create',
     'model:export',
     'model:tdd'
+  )
+);
+
+// gulp route --name routeName
+gulp.task('route', gulp.series(
+    'route:create',
+    'route:tdd'
   )
 )

@@ -44,7 +44,7 @@ export class ApiRoutes extends BaseRoute {
     // log
     logger.info('[ApiRoute] Creating api routes.');
 
-    // add index page route
+    // add router classes' routers here
     this.router.get('/', this.get);
     this.router.use(PingRoute.path, PingRoute.router);
     this.router.use(UploadRoute.path, UploadRoute.router);

@@ -1,0 +1,2 @@
+setup:
+  enterprise_license: process.env.CODECOV_KEY

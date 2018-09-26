@@ -8,6 +8,7 @@ import * as helmet from 'helmet';
 import * as methodOverride from 'method-override';
 import * as morgan from 'morgan';
 import * as path from 'path';
+require('dotenv').config();
 
 import { Connection } from '@/db';
 import { ApiRoutes } from './routes';

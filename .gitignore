@@ -21,9 +21,15 @@ node_modules/
 *.tap
 checkstyle-result.xml
 
+# Common IDEs
 .idea
 .vs
 .vscode
 package-lock.json
 
+
+# Environmental file
 .env
+
+# code coverage
+coverage/

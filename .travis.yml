@@ -10,4 +10,4 @@ before_script:
   - npm install -g codecov
 scripts:
   - npm test
-  - npm run coverage
+  - codecov -t CODECOV_TOKEN

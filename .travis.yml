@@ -4,6 +4,7 @@ node_js:
 env:
   NODE_ENV = test
 install:
+  npm install
   npm install -g codecov
 scripts:
   npm test

@@ -8,6 +8,6 @@ services:
 before_script:
   - sleep 15
   - npm install -g codecov
-scripts:
+script:
   - npm test
   - codecov -t CODECOV_TOKEN

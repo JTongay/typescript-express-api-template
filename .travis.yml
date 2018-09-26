@@ -8,6 +8,5 @@ services:
 before_script:
   - sleep 15
   - npm install -g codecov
-  - mongo test_db --eval 'db.createUser({username:"travis",passsword:"test", admin:true});'
 scripts:
   npm test

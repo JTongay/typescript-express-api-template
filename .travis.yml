@@ -3,7 +3,11 @@ node_js:
   - 8
 env:
   NODE_ENV = test
+services: 
+  mongodb
 before_script:
-  npm install -g codecov
+  - sleep 15
+  - npm install -g codecov
+  - mongod
 scripts:
   npm test

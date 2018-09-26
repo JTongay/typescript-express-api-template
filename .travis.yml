@@ -1,12 +1,9 @@
-language:
-  node_js
+language: node_js
 node_js:
   - 8
 env:
   NODE_ENV = test
 install:
-  - npm install -g codecov
-after_success:
-  - codecov
+  npm install -g codecov
 scripts:
   npm test

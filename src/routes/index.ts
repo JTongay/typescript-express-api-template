@@ -3,7 +3,6 @@ import { logger } from '@/services';
 import { NextFunction, Request, Response } from 'express';
 import { PingRoute } from './ping';
 import { BaseRoute } from './route';
-import { UploadRoute } from './upload';
 
 /**
  * / route
@@ -47,7 +46,6 @@ export class ApiRoutes extends BaseRoute {
     // add router classes' routers here
     this.router.get('/', this.get);
     this.router.use(PingRoute.path, PingRoute.router);
-    this.router.use(UploadRoute.path, UploadRoute.router);
     this.router.use('/user', UsersRoutes.router);
   }
 

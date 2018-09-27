@@ -1,3 +1,2 @@
 export * from './logger';
-export * from './localdb';
-export * from './upload';
+export * from './Auth.service';

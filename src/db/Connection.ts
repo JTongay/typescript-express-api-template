@@ -8,7 +8,6 @@ export class Connection {
 
   constructor() {
     this.setEnvUri();
-    console.log(process.env);
     mongoose.connect(this.mongoUri, { useNewUrlParser: true }, (err: mongoose.Error) => {
       if (err) {
         logger.error(err.message);

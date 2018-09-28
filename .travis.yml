@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 8
 env:
-  NODE_ENV = ci
+  process.env.NODE_ENV = 'ci'
 services:
   mongodb
 before_script:

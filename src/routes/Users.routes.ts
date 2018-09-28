@@ -18,6 +18,7 @@ export class UsersRoutes extends BaseRoute {
     this._usersController = UsersController;
 
     this.getUsers = this.getUsers.bind(this);
+    this.createUser = this.createUser.bind(this);
     this.init();
   }
 
@@ -34,6 +35,7 @@ export class UsersRoutes extends BaseRoute {
     logger.info('Creating UsersRoutes');
 
     this.router.get('/', this.getUsers);
+    this.router.get('/user', this.createUser);
   }
 
   private async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -43,6 +45,15 @@ export class UsersRoutes extends BaseRoute {
       res.status(200).json(users);
     } catch (e) {
       logger.error(`Error GET /users with ${e}`);
+      next(e);
+    }
+  }
+
+  private async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      await this._usersController.addUser();
+      res.status(200).json({'status': 'success'});
+    } catch (e) {
       next(e);
     }
   }

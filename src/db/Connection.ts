@@ -1,15 +1,16 @@
 import * as mongoose from 'mongoose';
+import { logger } from 'services';
 
 export class Connection {
 
-  private mongoUri: string = 'mongodb://127.0.0.1:27017/booyah';
+  private mongoUri: string = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URI}/${process.env.DB_NAME}`;
 
   constructor() {
-    mongoose.connect(this.mongoUri, { useNewUrlParser: true }, (err: any) => {
+    mongoose.connect(this.mongoUri, { useNewUrlParser: true }, (err: mongoose.Error) => {
       if (err) {
-        console.log(err.message);
+        logger.error(err.message);
       } else {
-        console.log('Successfully Connected');
+        logger.info('Successfully Connected');
       }
     });
   }

@@ -29,7 +29,7 @@ package-lock.json
 
 
 # Environmental file
-.env
+# .env
 
 # code coverage
 coverage/

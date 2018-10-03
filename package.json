@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/jest",
     "start": "npm run dev",
-    "coverage": "node_modules/.bin/codecov -t 1d1cd02e-8e83-48c7-ad33-7dae96b29d09",
+    "coverage": "node_modules/.bin/codecov -t CODECOV_TOKEN",
     "prod": "cross-env NODE_ENV=production webpack --watch",
     "dev": "webpack --watch",
     "build": "npm run build:dev",
@@ -15,7 +15,7 @@
     "copy-files": "node copyFiles.js",
     "clean": "npm cache clear && rimraf -- dist"
   },
-  "keywords": [],
+  "keywords": ["TypeScript", "Node", "Express", "Inversify"],
   "author": "Joseph Tongay",
   "license": "MIT",
   "dependencies": {

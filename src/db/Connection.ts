@@ -4,7 +4,7 @@ import DB_CONFIG from './config';
 
 export class Connection {
 
-  private mongoUri: string;
+  public mongoUri: string;
 
   constructor() {
     this.setEnvUri();

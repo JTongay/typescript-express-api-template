@@ -5,7 +5,6 @@ import 'jest';
 
 describe('Users Controller', () => {
   let usersController: IUsersController;
-  jest.setTimeout(30000);
 
   beforeEach(() => {
     usersController = new UsersController();

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/jest",
     "start": "npm run dev",
-    "coverage": "node_modules/.bin/codecov -t CODECOV_TOKEN",
+    "coverage": "node_modules/.bin/codecov",
     "prod": "cross-env NODE_ENV=production webpack --watch",
     "dev": "webpack --watch",
     "build": "npm run build:dev",

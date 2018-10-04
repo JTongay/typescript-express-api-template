@@ -8,7 +8,6 @@ describe('Users Controller', () => {
 
   beforeEach(() => {
     usersController = new UsersController();
-
   });
 
   it('should be defined', () => {

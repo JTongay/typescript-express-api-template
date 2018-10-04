@@ -7,11 +7,11 @@ dotenv.config();
 describe('Connection DB', () => {
   const req = {};
   const cb = jest.fn();
-  it('should give the test mongo URI in test env', () => {
+  xit('should give the test mongo URI in test env', () => {
     process.env.NODE_ENV = 'test';
     const connection: Connection = new Connection();
 
-    console.log(connection.mongoUri)
+    console.log(connection.mongoUri);
     expect(connection.mongoUri).toBe(DB_CONFIG.test.uri);
   });
 });

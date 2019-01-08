@@ -1,3 +1,4 @@
+import { UserRequest } from '@/builders/request';
 import { IUsersController } from '@/controllers/types';
 import { IUser, User } from '@/models';
 import { injectable } from 'inversify';
@@ -16,10 +17,30 @@ export class UsersController implements IUsersController {
     }
   }
 
-  public async addUser(): Promise<void> {
+  public async getUserByUsername(username: string): Promise<IUser> {
+    let response: IUser;
+    try {
+      response = await User.findOne({ username });
+      return response;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  public async getUserById(id: string): Promise<IUser> {
+    let response: IUser;
+    try {
+      response = await User.findOne({_id: id});
+      return response;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  public async addUser(userRequest: UserRequest): Promise<void> {
     let user: IUser;
     try {
-      user = new User({username: 'booyah', password: 'password'});
+      user = new User(userRequest);
       await user.save();
     } catch (e) {
       throw new Error(e);

@@ -38,19 +38,19 @@ export class UserRequestBuilder extends GenericBuilder {
 }
 
 export class UserRequest {
-  private _username: string;
-  private _password: string;
+  private username: string;
+  private password: string;
+
+  public get Username(): string {
+    return this.username;
+  }
+
+  public get Password(): string {
+    return this.password;
+  }
 
   constructor(builder: UserRequestBuilder) {
-    this._username = builder.Username;
-    this._password = builder.Password;
-  }
-
-  get username(): string {
-    return this._username;
-  }
-
-  get password(): string {
-    return this._password;
+    this.username = builder.Username;
+    this.password = builder.Password;
   }
 }

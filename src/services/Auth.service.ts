@@ -35,8 +35,9 @@ export class AuthService implements IAuthService {
    * @param {string} password - The password to hash
    * @returns {Promise<string>} - The hashed password
    */
-  public hashPassword (password: string): string {
-    return bcrypt.hashSync(password, 12);
+  public async hashPassword (password: string): Promise<string> {
+    const salt: string = await this.generateSalt(12);
+    return await bcrypt.hash(password, salt);
   }
 
   /**
@@ -47,5 +48,9 @@ export class AuthService implements IAuthService {
    */
   public verifyPassword (passwordRequest: string, passwordResponse: string): boolean {
     return bcrypt.compareSync(passwordRequest, passwordResponse);
+  }
+
+  private async generateSalt(rounds: number): Promise<string> {
+    return await bcrypt.genSalt(rounds);
   }
 }

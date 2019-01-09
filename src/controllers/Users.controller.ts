@@ -1,11 +1,18 @@
 import { UserRequest } from '@/builders/request';
 import { IUsersController } from '@/controllers/types';
 import { IUser, User } from '@/models';
-import { injectable } from 'inversify';
+import { IAuthService } from '@/services/types';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '@/inversify.types';
 import 'reflect-metadata';
 
 @injectable()
 export class UsersController implements IUsersController {
+  private _authService: IAuthService;
+
+  constructor(@inject(TYPES.IAuthService) authService: IAuthService) {
+    this._authService = authService;
+  }
 
   public async getUsers(): Promise<IUser[]> {
     let response: IUser[];
@@ -41,6 +48,7 @@ export class UsersController implements IUsersController {
     let user: IUser;
     try {
       user = new User(userRequest);
+      user.password = await this._authService.hashPassword(user.password);
       await user.save();
     } catch (e) {
       throw new Error(e);

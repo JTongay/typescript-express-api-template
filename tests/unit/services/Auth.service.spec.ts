@@ -33,15 +33,15 @@ describe('Auth Service', () => {
     expect(() => { authService.verifyToken('booyfdasgdasdg2312ah'); }).toThrow('JsonWebTokenError: jwt malformed');
   });
 
-  it('should hash a given password', () => {
-    const hashedPassword: string = authService.hashPassword('booyah');
+  it('should hash a given password', async () => {
+    const hashedPassword: string = await authService.hashPassword('booyah');
     expect(hashedPassword).toBeDefined();
     expect(typeof hashedPassword).toBe('string');
     expect(hashedPassword).not.toBe('booyah');
   });
 
-  it('should decrypt a hashed password and return true with successful password match', () => {
-    const hashedPassword: string = authService.hashPassword('booyah');
+  it('should decrypt a hashed password and return true with successful password match', async () => {
+    const hashedPassword: string = await authService.hashPassword('booyah');
     const verifyPassword: boolean = authService.verifyPassword('booyah', hashedPassword);
     expect(verifyPassword).toBe(true);
   });

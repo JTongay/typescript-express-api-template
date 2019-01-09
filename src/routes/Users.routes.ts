@@ -13,7 +13,6 @@ interface RequestBody {
   password: string;
 }
 
-
 export class UsersRoutes extends BaseRoute {
   private static instance: UsersRoutes;
   private _usersController: IUsersController;
@@ -43,8 +42,8 @@ export class UsersRoutes extends BaseRoute {
     logger.info('Creating UsersRoutes');
 
     this.router.get('/', this.getUsers);
-    this.router.get('/user', this.createUser);
     this.router.get('/:id', this.getUser);
+    this.router.post('/', this.createUser);
   }
 
   private async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -77,6 +76,7 @@ export class UsersRoutes extends BaseRoute {
     let userRequest: UserRequest;
     const { username, password }: RequestBody = req.body;
     try {
+      console.log(req.body, 'username in route');
       userRequest = new UserRequestBuilder(username, password).build();
       await this._usersController.addUser(userRequest);
       res.status(200).json({'status': 'success'});

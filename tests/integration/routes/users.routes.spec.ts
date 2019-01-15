@@ -21,7 +21,7 @@ describe('Users Routes', () => {
           done(err);
         } else {
           expect(res.status).toBe(200);
-          expect(res.body).toHaveLength(1);
+          expect(res.body.data).toHaveLength(1);
           done();
         }
       });

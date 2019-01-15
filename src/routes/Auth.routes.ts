@@ -56,8 +56,8 @@ export class AuthRoutes extends BaseRoute {
       user = await this._usersController.getUserByUsername(userRequest.Username);
       // verify password
       const passwordMatch: boolean = this._authService.verifyPassword(userRequest.Password, user.password);
-      // generate token
       if (passwordMatch) {
+        // generate token
         const token: string = this._authService.generateToken(user._id);
         // send it out
         const successResponse: SuccessResponse = new SuccessResponseBuilder(200).setToken(token).build();

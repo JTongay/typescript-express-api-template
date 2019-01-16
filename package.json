@@ -4,7 +4,7 @@
   "description": "a template for creating API's using express written in typescript",
   "main": "app.js",
   "scripts": {
-    "test": "node_modules/.bin/jest",
+    "test": "node_modules/.bin/jest --watch",
     "start": "npm run dev",
     "coverage": "node_modules/.bin/codecov",
     "prod": "cross-env NODE_ENV=production webpack --watch",

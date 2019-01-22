@@ -13,6 +13,7 @@ require('dotenv').config();
 import { Connection } from '@/db';
 import { ApiRoutes } from './routes';
 import { logger } from './services';
+import { baseErrorHandler, jwtErrorHandler, jwtValidator } from './middleware';
 
 /**
  * The server.
@@ -69,6 +70,10 @@ export class Server {
       },
     } as morgan.Options));
 
+    // auth middleware
+    this.app.use(jwtValidator(process.env.JWT_SECRET));
+    this.app.use(jwtErrorHandler);
+
     // mount json form parser
     this.app.use(bodyParser.json({ limit: '50mb' }));
 
@@ -84,14 +89,13 @@ export class Server {
     this.app.use(methodOverride());
     this.app.use(expressStatusMonitor());
 
-    // catch 404 and forward to error handler
-    this.app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-      err.status = 404;
-      next(err);
-    });
+    // dev env error handling
+    if (process.env.NODE_ENV === 'development') {
+      this.app.use(errorHandler());
+    }
 
-    // error handling
-    this.app.use(errorHandler());
+    // main error handling
+    this.app.use(baseErrorHandler);
   }
 
   /**

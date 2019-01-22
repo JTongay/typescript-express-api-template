@@ -1,6 +1,6 @@
 interface IPermissionsMap {
   [role: string]: {
-    [resource: string]: Array<string>;
+    [resource: string]: string[];
   };
 }
 

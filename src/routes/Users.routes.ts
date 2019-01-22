@@ -48,6 +48,7 @@ export class UsersRoutes extends BaseRoute {
 
   private async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     let users: IUser[];
+    console.log(req.headers);
     try {
       users = await this._usersController.getUsers();
       const successResponse: SuccessResponse = new SuccessResponseBuilder(200)

@@ -40,7 +40,7 @@
     "express-session": "^1.15.6",
     "express-status-monitor": "^1.0.1",
     "helmet": "^3.12.1",
-    "inversify": "^4.13.0",
+    "inversify": "^5.0.1",
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",

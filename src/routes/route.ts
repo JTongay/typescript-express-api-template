@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import { baseErrorHandler } from '@/middleware';
 
 export abstract class BaseRoute {
 
-  protected router: Router = Router({ mergeParams: true });
+  router: Router = Router({ mergeParams: true });
 
 }

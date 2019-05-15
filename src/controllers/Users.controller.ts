@@ -5,6 +5,7 @@ import { IAuthService } from '@/services/types';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/inversify.types';
 import 'reflect-metadata';
+import { BaseError } from '@/errors';
 
 @injectable()
 export class UsersController implements IUsersController {
@@ -15,13 +16,7 @@ export class UsersController implements IUsersController {
   }
 
   public async getUsers(): Promise<IUser[]> {
-    let response: IUser[];
-    try {
-      response = await User.find();
-      return response;
-    } catch (e) {
-      throw new Error(e);
-    }
+    return await User.find();
   }
 
   public async getUserByUsername(username: string): Promise<IUser> {
@@ -35,13 +30,7 @@ export class UsersController implements IUsersController {
   }
 
   public async getUserById(id: string): Promise<IUser> {
-    let response: IUser;
-    try {
-      response = await User.findOne({_id: id});
-      return response;
-    } catch (e) {
-      throw new Error(e);
-    }
+    return await User.findById(id, { password: 0, __v: 0 });
   }
 
   public async addUser(userRequest: UserRequest): Promise<void> {

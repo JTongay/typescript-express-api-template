@@ -13,7 +13,7 @@ export class AuthService implements IAuthService {
    * @returns {string}
    */
   public generateToken (userId: string): string {
-    return jwt.sign({id: userId}, process.env.JWT_SECRET);
+    return jwt.sign({id: userId}, process.env.JWT_SECRET, { expiresIn: '1 days' });
   }
 
   /**

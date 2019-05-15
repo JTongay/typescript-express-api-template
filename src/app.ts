@@ -63,6 +63,9 @@ export class Server {
     // add static paths
     this.app.use(express.static(path.join(__dirname, 'public')));
 
+    // main error handling
+    // this.app.use(baseErrorHandler);
+
     // mount logger
     this.app.use(morgan('tiny', {
       stream: {
@@ -90,12 +93,9 @@ export class Server {
     this.app.use(expressStatusMonitor());
 
     // dev env error handling
-    if (process.env.NODE_ENV === 'development') {
-      this.app.use(errorHandler());
-    }
-
-    // main error handling
-    this.app.use(baseErrorHandler);
+    // if (process.env.NODE_ENV === 'development') {
+    //   this.app.use(errorHandler());
+    // }
   }
 
   /**
@@ -108,6 +108,7 @@ export class Server {
   private routes () {
     // use router middleware
     this.app.use(ApiRoutes.path, ApiRoutes.router);
+    this.app.use(baseErrorHandler);
   }
 
   private connectToDb(): Connection {

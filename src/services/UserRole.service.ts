@@ -34,7 +34,7 @@ export class UserRoleService implements IUserRoleService {
         return next();
       } else {
         const e: UnauthorizedError = new UnauthorizedError();
-        e.status = 401;
+        e.statusCode = 401;
         return next(e);
       }
     }

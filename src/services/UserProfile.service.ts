@@ -7,6 +7,7 @@ import { TYPES } from '@/inversify.types';
 import 'reflect-metadata';
 import { IUser } from '@/models';
 import { logger } from './logger';
+import { EntityNotFoundError } from '@/errors';
 
 @injectable()
 export class UserProfileService implements IUserProfileService {
@@ -36,7 +37,7 @@ export class UserProfileService implements IUserProfileService {
     try {
       user = await this._usersController.getUserById(userId);
       if (!user) {
-        throw new Error(`Couldn't find user: ${userId}`);
+        throw new EntityNotFoundError('user');
       }
       // add the found user to the request data object
       req.data = user;

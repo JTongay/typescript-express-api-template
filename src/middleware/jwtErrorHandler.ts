@@ -1,4 +1,5 @@
 import { Request, RequestHandler, Response, NextFunction } from 'express';
+import { UnauthorizedError, ErrorValue } from '@/errors';
 
 export function jwtErrorHandler(
   err: Error,
@@ -6,11 +7,8 @@ export function jwtErrorHandler(
   res: Response,
   next: NextFunction
 ): void {
-  try {
-    if (err.name === 'UnauthorizedError') {
-      throw new Error('Invalid JWT');
-    }
-  } catch (e) {
-    next(e);
+  if (err.name === ErrorValue.Unauthorized) {
+    throw new UnauthorizedError();
   }
+  next(err);
 }

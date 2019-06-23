@@ -7,9 +7,10 @@ import { logger } from '@/services';
 import { NextFunction, Request, Response, Router } from 'express';
 import { UserRequest, UserRequestBuilder } from '@/builders/request';
 import { SuccessResponse, SuccessResponseBuilder } from '@/builders/response';
-import { UserValidation } from '@/middleware/validation';
+import { UserValidation, validationHandler } from '@/middleware/validation';
 import { ValidatedDataRequest } from '@/types';
 import { IUserProfileService } from '@/services/types';
+import { RequestValidation } from 'express-validator';
 
 interface RequestBody {
   username: string;
@@ -75,11 +76,13 @@ export class UsersRoutes extends BaseRoute {
     res.status(200).json(successResponse);
   }
 
-  private async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  private async createUser(req: any, res: Response, next: NextFunction): Promise<void> {
     let userRequest: UserRequest;
     const { username, password }: RequestBody = req.body;
     try {
-      console.log(req.body, 'username in route');
+      // console.log(req);
+      // const wat: RequestValidation = await req.getValidationResult();
+      // console.log(wat);
       userRequest = new UserRequestBuilder(username, password).build();
       await this._usersController.addUser(userRequest);
       res.status(200).json({'status': 'success'});

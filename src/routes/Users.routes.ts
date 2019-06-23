@@ -7,15 +7,14 @@ import { logger } from '@/services';
 import { NextFunction, Request, Response, Router } from 'express';
 import { UserRequest, UserRequestBuilder } from '@/builders/request';
 import { SuccessResponse, SuccessResponseBuilder } from '@/builders/response';
-import { UserValidation, validationHandler } from '@/middleware/validation';
 import { ValidatedDataRequest } from '@/types';
 import { IUserProfileService } from '@/services/types';
-import { RequestValidation } from 'express-validator';
 
 interface RequestBody {
   username: string;
   password: string;
 }
+
 
 export class UsersRoutes extends BaseRoute {
   private static instance: UsersRoutes;
@@ -50,7 +49,7 @@ export class UsersRoutes extends BaseRoute {
     logger.info('Creating UsersRoutes');
     this.router.get('/', this.getUsers);
     this.router.get('/:id', this._userProfile.checkUser, this.getUser);
-    this.router.post('/', UserValidation(), this.createUser);
+    this.router.post('/', this.createUser);
   }
 
   private async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {

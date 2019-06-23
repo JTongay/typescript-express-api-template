@@ -39,7 +39,6 @@
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
     "express-status-monitor": "^1.0.1",
-    "express-validator": "^5.3.1",
     "helmet": "^3.12.1",
     "inversify": "^5.0.1",
     "joi": "^13.4.0",

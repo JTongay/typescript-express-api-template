@@ -20,13 +20,7 @@ export class UsersController implements IUsersController {
   }
 
   public async getUserByUsername(username: string): Promise<IUser> {
-    let response: IUser;
-    try {
-      response = await User.findOne({ username });
-      return response;
-    } catch (e) {
-      throw new Error(e);
-    }
+    return await User.findOne({ username });
   }
 
   public async getUserById(id: string): Promise<IUser> {

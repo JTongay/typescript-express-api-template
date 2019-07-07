@@ -9,6 +9,8 @@ import { UserRequest, UserRequestBuilder } from '@/builders/request';
 import { SuccessResponse, SuccessResponseBuilder } from '@/builders/response';
 import { ValidatedDataRequest } from '@/types';
 import { IUserProfileService } from '@/services/types';
+import { validationMiddleware } from '@/middleware/validation';
+import { CreateUserDto } from '@/dto';
 
 interface RequestBody {
   username: string;
@@ -49,7 +51,7 @@ export class UsersRoutes extends BaseRoute {
     logger.info('Creating UsersRoutes');
     this.router.get('/', this.getUsers);
     this.router.get('/:id', this._userProfile.checkUser, this.getUser);
-    this.router.post('/', this.createUser);
+    this.router.post('/', validationMiddleware(CreateUserDto), this.createUser);
   }
 
   private async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -66,22 +68,16 @@ export class UsersRoutes extends BaseRoute {
   }
 
   private async getUser(req: ValidatedDataRequest, res: Response, next: NextFunction): Promise<void> {
-    if (req.data === {}) {
-      res.status(401).json({status: 'fuck'});
-    }
     const successResponse: SuccessResponse = new SuccessResponseBuilder(200)
       .setData(req.data)
       .build();
     res.status(200).json(successResponse);
   }
 
-  private async createUser(req: any, res: Response, next: NextFunction): Promise<void> {
+  private async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     let userRequest: UserRequest;
     const { username, password }: RequestBody = req.body;
     try {
-      // console.log(req);
-      // const wat: RequestValidation = await req.getValidationResult();
-      // console.log(wat);
       userRequest = new UserRequestBuilder(username, password).build();
       await this._usersController.addUser(userRequest);
       res.status(200).json({'status': 'success'});

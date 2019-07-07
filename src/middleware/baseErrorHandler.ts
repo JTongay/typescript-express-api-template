@@ -10,7 +10,8 @@ export function baseErrorHandler(
     if (!res.headersSent) {
       res.status(error.statusCode || 500).json({
         message: error.message,
-        status: error.statusCode
+        status: error.statusCode,
+        validation: error.validation
       });
     } else {
       next(error);

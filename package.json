@@ -27,6 +27,8 @@
   "dependencies": {
     "bcrypt": "^3.0.1",
     "body-parser": "^1.18.3",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.9.1",
     "compression": "^1.7.2",
     "config": "^1.30.0",
     "cookie-parser": "^1.4.3",
@@ -41,6 +43,7 @@
     "express-status-monitor": "^1.0.1",
     "helmet": "^3.12.1",
     "inversify": "^5.0.1",
+    "inversify-inject-decorators": "^3.1.0",
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",

@@ -7,7 +7,7 @@
     "test": "node_modules/.bin/jest --watch",
     "start": "npm run dev",
     "coverage": "node_modules/.bin/codecov",
-    "ci": "node_modules/.bin/jest --runInBand",
+    "ci": "node_modules/.bin/jest --maxWorkers=4",
     "prod": "cross-env NODE_ENV=production webpack --watch",
     "dev": "webpack --watch",
     "doc": "apidoc -i routes/ -o apidoc/",

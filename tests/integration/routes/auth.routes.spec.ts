@@ -3,21 +3,17 @@ import 'jest';
 import { IUser, User } from '@/models';
 import { app } from '@/index';
 import { AuthService } from '@/services';
+import { setupUser, cleanupUser } from '../../helpers';
 
 describe('AuthRoutes', () => {
   const authService = new AuthService(); // When inserting a test user, you must hash the password first for password comparison when logging in!
-  beforeAll(async done => {
-    const testUser: IUser = new User({
-      username: 'joejoe',
-      password: await authService.hashPassword('password'),
-      admin: true
-    });
-    await testUser.save();
-    return done();
+  beforeEach(async done => {
+    await setupUser();
+    done();
   });
   afterEach(async done => {
-    await User.findOneAndRemove({ username: 'joejoe' });
-    return done();
+    await cleanupUser();
+    done();
   });
 
   it('should login a user', (done) => {
@@ -30,9 +26,12 @@ describe('AuthRoutes', () => {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .end((err, res) => {
+        if (err) {
+          done();
+        }
         expect(res.status).toBe(200);
         expect(res.body.token).toBeDefined();
-        return done();
+        done();
       });
   });
 });

@@ -1,20 +1,25 @@
 import { app } from '@/index';
 import * as supertest from 'supertest';
-import { loginUser, setupUser, cleanupUser } from '../../helpers';
+import { loginUser, setupUser, cleanupUser, DbManager } from '../../helpers';
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 interface Auth {
   token?: string;
 }
 
-describe('ping route', () => {
+fdescribe('ping route', () => {
   const auth: Auth = {};
+  // const dbManager: DbManager = new DbManager();
   beforeEach(async (done) => {
+    // await dbManager.start();
     await setupUser();
     return loginUser(auth)(done);
   });
   afterEach(async (done) => {
+    // dbManager.stop();
     await cleanupUser();
-    return done();
+    done();
   });
   it('should return pong', (done) => {
     supertest(app)

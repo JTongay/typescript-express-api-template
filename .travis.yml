@@ -9,5 +9,5 @@ before_script:
   - sleep 15
   - npm install -g codecov
 script:
-  - npm test
+  - npm run ci
   - codecov -t process.env.CODECOV_TOKEN

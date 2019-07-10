@@ -9,14 +9,14 @@ interface Auth {
 
 describe('Users Routes', () => {
   const auth: Auth = {};
-  beforeAll(async (done) => {
+  beforeEach(async (done) => {
     await setupUser();
     return loginUser(auth)(done);
   });
 
-  afterAll(async (done) => {
+  afterEach(async (done) => {
     await cleanupUser();
-    return done();
+    done();
   });
 
   it('should get all of the users', (done) => {
@@ -28,6 +28,7 @@ describe('Users Routes', () => {
           done(err);
         } else {
           expect(res.status).toBe(200);
+          expect(res.body.data).toBeInstanceOf(Array);
           expect(res.body.data).toHaveLength(1);
           done();
         }

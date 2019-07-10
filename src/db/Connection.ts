@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import { logger } from '@/services';
 import DB_CONFIG from './config';
+import { DbManager } from '@/../tests/helpers';
 
 export class Connection {
 

@@ -108,6 +108,9 @@
     "yargs": "^12.0.2"
   },
   "jest": {
+    "ts-jest": {
+      "diagnostics": false
+    },
     "moduleFileExtensions": [
       "ts",
       "js",

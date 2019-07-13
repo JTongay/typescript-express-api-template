@@ -1,28 +1,25 @@
 import { app } from '@/index';
 import * as supertest from 'supertest';
-import { loginUser } from '../login-user';
-import { IUser, User } from '@/models';
+import { loginUser, setupUser, cleanupUser, DbManager } from '../../helpers';
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 interface Auth {
   token?: string;
 }
 
-describe('ping route', () => {
+fdescribe('ping route', () => {
   const auth: Auth = {};
+  // const dbManager: DbManager = new DbManager();
   beforeEach(async (done) => {
-    const testUser: IUser = new User({
-      username: 'joejoe',
-      password: 'password',
-      admin: true
-    });
-    await testUser.save();
-    loginUser(auth);
-    console.log(auth);
-    return done();
+    // await dbManager.start();
+    await setupUser();
+    return loginUser(auth)(done);
   });
   afterEach(async (done) => {
-    await User.findOneAndRemove({ username: 'joejoe' });
-    return done();
+    // dbManager.stop();
+    await cleanupUser();
+    done();
   });
   it('should return pong', (done) => {
     supertest(app)
@@ -32,7 +29,6 @@ describe('ping route', () => {
         if (err) {
           done(err);
         } else {
-          console.log(auth)
           expect(res.status).toBe(200);
           expect(res.body).toBe('pong');
           done();

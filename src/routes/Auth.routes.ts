@@ -56,6 +56,10 @@ export class AuthRoutes extends BaseRoute {
       user = await this._usersController.getUserByUsername(userRequest.Username);
       // verify password
       const passwordMatch: boolean = this._authService.verifyPassword(userRequest.Password, user.password);
+      // const passwordMatch: boolean = userRequest.Password === user.password;
+      console.log(passwordMatch);
+      console.log(userRequest.Password, 'userRequest');
+      console.log(user.password, 'user');
       if (passwordMatch) {
         // generate token
         const token: string = this._authService.generateToken(user._id);

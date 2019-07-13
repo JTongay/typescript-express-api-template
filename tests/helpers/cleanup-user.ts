@@ -4,5 +4,5 @@ import 'jest';
 import { User } from '@/models';
 
 export async function cleanupUser(): Promise<void> {
-  await User.findOneAndRemove({ username: 'joejoe' });
+  await User.db.collection('users').deleteMany({ 'username': 'joejoe' });
 }

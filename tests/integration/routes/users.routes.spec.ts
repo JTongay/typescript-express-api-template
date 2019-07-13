@@ -1,5 +1,4 @@
 import { app } from '@/index';
-import { User, IUser } from '@/models';
 import * as supertest from 'supertest';
 import { setupUser, loginUser, cleanupUser } from '../../helpers';
 
@@ -29,7 +28,6 @@ describe('Users Routes', () => {
         } else {
           expect(res.status).toBe(200);
           expect(res.body.data).toBeInstanceOf(Array);
-          expect(res.body.data).toHaveLength(1);
           done();
         }
       });

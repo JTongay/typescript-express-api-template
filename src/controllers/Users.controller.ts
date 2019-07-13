@@ -38,4 +38,8 @@ export class UsersController implements IUsersController {
     }
   }
 
+  public async dropUsers(): Promise<void> {
+    return await User.db.dropCollection('users');
+  }
+
 }

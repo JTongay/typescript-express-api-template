@@ -7,7 +7,10 @@ import { logger } from '@/services';
 import { IUsersController } from '@/controllers/types';
 import { UserRequest, UserRequestBuilder } from '@/builders/request';
 import { IUser } from '@/models';
-import { SuccessResponse, SuccessResponseBuilder, ErrorResponse, ErrorResponseBuilder } from '@/builders/response';
+import { SuccessResponse, SuccessResponseBuilder } from '@/builders/response';
+import { LoginFailedError } from '@/errors/login-failed.error';
+import { validationMiddleware } from '@/middleware/validation';
+import { LoginDto } from '@/dto';
 
 interface RequestBody {
   username: string;
@@ -44,7 +47,7 @@ export class AuthRoutes extends BaseRoute {
    */
   private init(): void {
     logger.info('Creating AuthRoutes');
-    this.router.post('/login', this.login.bind(this));
+    this.router.post('/login', validationMiddleware(LoginDto), this.login.bind(this));
   }
 
   public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -54,12 +57,11 @@ export class AuthRoutes extends BaseRoute {
     try {
       // get the user
       user = await this._usersController.getUserByUsername(userRequest.Username);
+      if (!user) {
+        throw new LoginFailedError();
+      }
       // verify password
       const passwordMatch: boolean = this._authService.verifyPassword(userRequest.Password, user.password);
-      // const passwordMatch: boolean = userRequest.Password === user.password;
-      console.log(passwordMatch);
-      console.log(userRequest.Password, 'userRequest');
-      console.log(user.password, 'user');
       if (passwordMatch) {
         // generate token
         const token: string = this._authService.generateToken(user._id);
@@ -67,8 +69,7 @@ export class AuthRoutes extends BaseRoute {
         const successResponse: SuccessResponse = new SuccessResponseBuilder(200).setToken(token).build();
         res.status(200).json(successResponse);
       } else {
-        const errorResponse: ErrorResponse = new ErrorResponseBuilder(401).build();
-        res.status(401).json(errorResponse);
+        throw new LoginFailedError();
       }
     } catch (e) {
       logger.error(`Error POST /login with ${e}`);

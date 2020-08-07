@@ -28,7 +28,7 @@
   "dependencies": {
     "bcrypt": "^3.0.1",
     "body-parser": "^1.18.3",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.9.1",
     "compression": "^1.7.2",
     "config": "^1.30.0",
